@@ -94,4 +94,4 @@ elif option == "Book Appointment":
             st.success(response.json()["message"])
 
 # View Appointments
-elif option == "View Appoint
+elif option == "View Appointments":
