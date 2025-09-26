@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# SQLite DB
+hospital.db
+
+# IDE/editor
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# System
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
