@@ -2,8 +2,8 @@ import streamlit as st
 import requests
 import pandas as pd
 
+# ----------------- Page Config -----------------
 st.set_page_config(page_title="DD Hospital Chatbot", page_icon="🏥")
-
 st.title("🏥 DD Hospital Chatbot")
 
 # ----------------- Sidebar -----------------
@@ -14,7 +14,7 @@ option = st.sidebar.selectbox(
 )
 
 # ----------------- Backend URL -----------------
-BASE_URL = "http://127.0.0.1:8000"  # Change if deployed to online FastAPI
+BASE_URL = "http://127.0.0.1:8000"  # Change if using online FastAPI
 
 # ----------------- Chatbot -----------------
 if option == "Chatbot":
@@ -39,4 +39,35 @@ elif option == "Book Appointment":
         if submitted:
             try:
                 payload = {"patient_name": name, "date": str(date), "time": time}
-                response = requests.post(f"{BAS
+                response = requests.post(f"{BASE_URL}/appointment", json=payload)
+                st.success(response.json()["message"])
+            except:
+                st.error("Error booking appointment. Make sure FastAPI server is running.")
+
+# ----------------- View Appointments -----------------
+elif option == "View Appointments":
+    st.subheader("All Appointments")
+    try:
+        response = requests.get(f"{BASE_URL}/appointments")
+        data = response.json()
+        if len(data) > 0:
+            df = pd.DataFrame(data)
+            st.dataframe(df)
+        else:
+            st.info("No appointments found.")
+    except:
+        st.error("Error fetching appointments. Make sure FastAPI server is running.")
+
+# ----------------- View Chat Logs -----------------
+elif option == "View Chat Logs":
+    st.subheader("Chat Logs")
+    try:
+        response = requests.get(f"{BASE_URL}/chatlogs")
+        data = response.json()
+        if len(data) > 0:
+            df = pd.DataFrame(data)
+            st.dataframe(df)
+        else:
+            st.info("No chat logs found.")
+    except:
+        st.error("Error fetching chat logs. Make sure FastAPI server is running.")
