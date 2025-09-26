@@ -1,9 +1,13 @@
+import threading
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 from sqlalchemy import Column, Integer, String, DateTime, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import datetime
+import streamlit as st
+import requests
 
 # -----------------------
 # FastAPI App
@@ -65,15 +69,12 @@ FAQ = {
 }
 
 # -----------------------
-# Endpoints
+# FastAPI Endpoints
 # -----------------------
-
-# 1️⃣ Hello endpoint
 @app.get("/hello")
 def read_hello():
     return {"message": "Welcome to DD Hospital"}
 
-# 2️⃣ Appointment endpoint
 @app.post("/appointment")
 def create_appointment(appointment: Appointment):
     db = SessionLocal()
@@ -89,7 +90,6 @@ def create_appointment(appointment: Appointment):
         "message": f"Appointment booked for {appointment.patient_name} on {appointment.date} at {appointment.time}"
     }
 
-# 3️⃣ Chatbot endpoint
 @app.post("/chat")
 def chat(request: ChatRequest):
     text = request.message.lower()
@@ -99,7 +99,6 @@ def chat(request: ChatRequest):
             reply = FAQ[key]
             break
 
-    # Save chat log to DB
     db = SessionLocal()
     chat_log = ChatLogDB(message=request.message, reply=reply)
     db.add(chat_log)
@@ -108,7 +107,6 @@ def chat(request: ChatRequest):
 
     return {"reply": reply}
 
-# 4️⃣ View all appointments (Admin)
 @app.get("/appointments")
 def get_appointments():
     db = SessionLocal()
@@ -116,10 +114,49 @@ def get_appointments():
     db.close()
     return appointments
 
-# 5️⃣ View all chat logs (Admin)
 @app.get("/chatlogs")
 def get_chatlogs():
     db = SessionLocal()
     logs = db.query(ChatLogDB).all()
     db.close()
     return logs
+
+# -----------------------
+# Run FastAPI in thread
+# -----------------------
+def run_fastapi():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+threading.Thread(target=run_fastapi, daemon=True).start()
+
+# -----------------------
+# Streamlit Frontend
+# -----------------------
+st.title("DD Hospital Chatbot")
+
+st.subheader("Chat with bot")
+msg = st.text_input("Type your message:")
+
+if st.button("Send"):
+    try:
+        response = requests.post("http://127.0.0.1:8000/chat", json={"message": msg})
+        st.write(response.json()["reply"])
+    except:
+        st.write("Error connecting to chatbot. Make sure FastAPI server is running.")
+
+st.markdown("---")
+st.subheader("Book an Appointment")
+name = st.text_input("Your Name")
+date = st.date_input("Appointment Date")
+time = st.text_input("Time (e.g., 10:00 AM)")
+
+if st.button("Book Appointment"):
+    try:
+        response = requests.post("http://127.0.0.1:8000/appointment", json={
+            "patient_name": name,
+            "date": str(date),
+            "time": time
+        })
+        st.success(response.json()["message"])
+    except:
+        st.error("Error booking appointment. Make sure FastAPI server is running.")
