@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 app = FastAPI(title="DD Hospital Chatbot")
 
-# Allow Streamlit frontend
+# Allow frontend to access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
