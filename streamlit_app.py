@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import os
 
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "https://dd-hospital-chatbot.onrender.com")
 
 user_msg = st.text_input("Type your message:")
 
