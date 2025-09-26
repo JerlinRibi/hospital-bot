@@ -1,8 +1,27 @@
-import streamlit as st
-import requests
-import os
+# streamlit_app.py
 
-BACKEND_URL = os.getenv("BACKEND_URL", "https://dd-hospital-chatbot.onrender.com")
+import streamlit as st
+
+# -----------------------
+# FAQ / simple chatbot
+# -----------------------
+FAQ = {
+    "fever": "Please take rest and drink fluids.",
+    "headache": "Take some rest and stay hydrated.",
+    "appointment": "You can book an appointment anytime.",
+    "doctor": "Our doctors are available Mon-Fri, 9AM-5PM.",
+    "working hours": "Our hospital is open Mon-Fri 9AM-5PM.",
+    "contact": "Call us at +91-XXXXXXXX",
+    "hospital info": "DD Hospital is located at Main Street.",
+    "emergency": "For emergency, call 108 immediately.",
+    "insurance": "We accept most major insurance providers."
+}
+
+# -----------------------
+# Streamlit UI
+# -----------------------
+st.set_page_config(page_title="DD Hospital Chatbot", layout="centered")
+st.title("DD Hospital Chatbot - Simple UI")
 
 user_msg = st.text_input("Type your message:")
 
@@ -10,8 +29,10 @@ if st.button("Send"):
     if user_msg.strip() == "":
         st.warning("Please type a message!")
     else:
-        try:
-            resp = requests.post(f"{BACKEND_URL}/chat", json={"message": user_msg}, timeout=5)
-            st.success(resp.json().get("reply", "No reply"))
-        except Exception as e:
-            st.error("Backend not reachable: " + str(e))
+        text = user_msg.lower()
+        reply = "Sorry, I didn’t understand. Please ask about appointments, doctors, or hospital info."
+        for key in FAQ:
+            if key in text:
+                reply = FAQ[key]
+                break
+        st.success(reply)
