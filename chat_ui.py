@@ -12,10 +12,9 @@ option = st.sidebar.selectbox(
     ["Chatbot", "Book Appointment", "View Appointments", "View Chat Logs"]
 )
 
-# ⚠️ Replace this with your deployed FastAPI backend URL for Streamlit deployment
-# Example: BASE_URL = "https://your-app-name.streamlit.app"
-BASE_URL = "http://127.0.0.1:8000"  # <-- Keep this for local testing
-# BASE_URL = "https://your-deployed-fastapi-url.com"  # <-- Use this after deployment
+# ⚠️ Replace this with your deployed FastAPI backend URL
+# Example: BASE_URL = "https://dd-hospital-chatbot.onrender.com"
+BASE_URL = "https://dd-hospital-chatbot.onrender.com"  # <-- LIVE backend
 
 # ----------------- Chatbot -----------------
 if option == "Chatbot":
@@ -52,34 +51,4 @@ elif option == "Book Appointment":
                         "Error booking appointment. Make sure FastAPI server is running or correct URL is set."
                     )
 
-# ----------------- View Appointments -----------------
-elif option == "View Appointments":
-    st.subheader("All Appointments")
-    try:
-        response = requests.get(f"{BASE_URL}/appointments")
-        data = response.json()
-        if len(data) > 0:
-            df = pd.DataFrame(data)
-            st.dataframe(df)
-        else:
-            st.info("No appointments found.")
-    except:
-        st.error(
-            "Error fetching appointments. Make sure FastAPI server is running or correct URL is set."
-        )
-
-# ----------------- View Chat Logs -----------------
-elif option == "View Chat Logs":
-    st.subheader("Chat Logs")
-    try:
-        response = requests.get(f"{BASE_URL}/chatlogs")
-        data = response.json()
-        if len(data) > 0:
-            df = pd.DataFrame(data)
-            st.dataframe(df)
-        else:
-            st.info("No chat logs found.")
-    except:
-        st.error(
-            "Error fetching chat logs. Make sure FastAPI server is running or correct URL is set."
-        )
+# ----------------- View Appointments
