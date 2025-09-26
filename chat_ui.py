@@ -12,9 +12,10 @@ option = st.sidebar.selectbox(
     ["Chatbot", "Book Appointment", "View Appointments", "View Chat Logs"]
 )
 
-# ⚠️ For online deployment, use your deployed FastAPI URL instead of localhost
+# ⚠️ Replace this with your deployed FastAPI backend URL for Streamlit deployment
 # Example: BASE_URL = "https://your-app-name.streamlit.app"
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8000"  # <-- Keep this for local testing
+# BASE_URL = "https://your-deployed-fastapi-url.com"  # <-- Use this after deployment
 
 # ----------------- Chatbot -----------------
 if option == "Chatbot":
@@ -26,7 +27,9 @@ if option == "Chatbot":
                 response = requests.post(f"{BASE_URL}/chat", json={"message": msg})
                 st.write(response.json()["reply"])
             except:
-                st.error("Error connecting to chatbot. Make sure FastAPI server is running.")
+                st.error(
+                    "Error connecting to chatbot. Make sure FastAPI server is running or correct URL is set."
+                )
 
 # ----------------- Book Appointment -----------------
 elif option == "Book Appointment":
@@ -45,7 +48,9 @@ elif option == "Book Appointment":
                     response = requests.post(f"{BASE_URL}/appointment", json=payload)
                     st.success(response.json()["message"])
                 except:
-                    st.error("Error booking appointment. Make sure FastAPI server is running.")
+                    st.error(
+                        "Error booking appointment. Make sure FastAPI server is running or correct URL is set."
+                    )
 
 # ----------------- View Appointments -----------------
 elif option == "View Appointments":
@@ -59,7 +64,9 @@ elif option == "View Appointments":
         else:
             st.info("No appointments found.")
     except:
-        st.error("Error fetching appointments. Make sure FastAPI server is running.")
+        st.error(
+            "Error fetching appointments. Make sure FastAPI server is running or correct URL is set."
+        )
 
 # ----------------- View Chat Logs -----------------
 elif option == "View Chat Logs":
@@ -73,4 +80,6 @@ elif option == "View Chat Logs":
         else:
             st.info("No chat logs found.")
     except:
-        st.error("Error fetching chat logs. Make sure FastAPI server is running.")
+        st.error(
+            "Error fetching chat logs. Make sure FastAPI server is running or correct URL is set."
+        )
